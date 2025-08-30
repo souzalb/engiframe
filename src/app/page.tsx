@@ -1,19 +1,19 @@
-import CanvasArea from "./_components/canvas-area";
-import Header from "./_components/header";
-import ResultsPanel from "./_components/results-panel";
-import Toolbar from "./_components/toolbar";
+import CanvasArea from "@/app-components/CanvasArea"
+import Header from "@/app-components/Header"
+import ResultsPanel from "@/app-components/ResultsPanel"
+import Toolbar from "@/app-components/Toolbar"
 
 export default function Home() {
   return (
-    <div className="flex flex-col h-screen bg-stone-100 text-stone-800 font-sans">
+    <div className="flex h-screen flex-col bg-stone-100 font-sans text-stone-800">
       <Header />
       <div className="flex flex-1 overflow-hidden">
         <Toolbar />
-        <main className="flex-1 flex flex-col p-4 overflow-auto">
+        <main className="flex flex-1 flex-col overflow-auto p-4">
           <CanvasArea />
           <ResultsPanel />
         </main>
       </div>
     </div>
-  );
+  )
 }
