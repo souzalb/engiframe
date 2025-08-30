@@ -11,11 +11,19 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-import { Pin, RollerCoaster, Plus, ArrowDownToLine, Waves } from "lucide-react"
+import {
+  Pin,
+  RollerCoaster,
+  Plus,
+  ArrowDownToLine,
+  Waves,
+  Minus,
+} from "lucide-react"
 import { useAppStore } from "../lib/store"
 
 type Tool =
   | "node"
+  | "member"
   | "pin-support"
   | "roller-support"
   | "point-load"
@@ -48,6 +56,26 @@ export default function Toolbar() {
                   onClick={() => handleToolClick("node")}
                 >
                   <Plus className="mr-2 h-4 w-4" /> Adicionar Nó
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Adiciona um nó na estrutura</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+
+          <div>
+            <h3 className="mb-2 text-sm font-semibold text-stone-700">
+              1.1 Adicionar Barra
+            </h3>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={activeTool === "member" ? "default" : "outline"}
+                  size="icon"
+                  onClick={() => handleToolClick("member")}
+                >
+                  <Minus className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>

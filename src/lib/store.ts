@@ -26,37 +26,49 @@ export interface Support {
   type: "pin" | "roller" | "fixed"
 }
 
-// Futuramente adicionaremos: Member, PointLoad, etc.
+export interface Member {
+  id: string
+  startNodeId: string
+  endNodeId: string
+}
 
 // Estrutura do Estado Global da Aplicação
 interface AppState {
   activeTool: Tool
+  startNodeForMember: string | null // Armazena o ID do primeiro nó ao criar uma barra
   nodes: Node[]
   supports: Support[]
+  members: Member[]
 
-  // Agrupamos todas as funções que modificam o estado em 'actions'
   actions: {
     setActiveTool: (tool: Tool) => void
+    setStartNodeForMember: (nodeId: string | null) => void
     addNode: (x: number, y: number) => void
     addSupport: (nodeId: string, type: "pin" | "roller" | "fixed") => void
+    addMember: (startNodeId: string, endNodeId: string) => void
     findNodeNear: (x: number, y: number, tolerance?: number) => Node | null
     reset: () => void
   }
 }
 
-// Estado inicial da aplicação
 const initialState = {
   activeTool: null,
+  startNodeForMember: null,
   nodes: [],
   supports: [],
+  members: [],
 }
 
-// Criação do store com Zustand
 export const useAppStore = create<AppState>((set, get) => ({
   ...initialState,
 
   actions: {
-    setActiveTool: (tool) => set({ activeTool: tool }),
+    setActiveTool: (tool) => {
+      // Se o utilizador trocar de ferramenta, cancelamos a criação de barra
+      set({ activeTool: tool, startNodeForMember: null })
+    },
+
+    setStartNodeForMember: (nodeId) => set({ startNodeForMember: nodeId }),
 
     addNode: (x, y) => {
       const newNode: Node = { id: uuidv4(), x, y }
@@ -64,14 +76,18 @@ export const useAppStore = create<AppState>((set, get) => ({
     },
 
     addSupport: (nodeId, type) => {
-      // Evita adicionar múltiplos apoios no mesmo nó
       if (get().supports.some((s) => s.nodeId === nodeId)) return
       const newSupport: Support = { id: uuidv4(), nodeId, type }
       set((state) => ({ supports: [...state.supports, newSupport] }))
     },
 
+    addMember: (startNodeId, endNodeId) => {
+      if (startNodeId === endNodeId) return // Não cria barra no mesmo nó
+      const newMember: Member = { id: uuidv4(), startNodeId, endNodeId }
+      set((state) => ({ members: [...state.members, newMember] }))
+    },
+
     findNodeNear: (x, y, tolerance = 15) => {
-      // Procura por um nó próximo à posição do cursor
       const nodes = get().nodes
       for (const node of nodes) {
         const distance = Math.sqrt(
@@ -84,11 +100,6 @@ export const useAppStore = create<AppState>((set, get) => ({
       return null
     },
 
-    reset: () =>
-      set(() => ({
-        activeTool: null,
-        nodes: [],
-        supports: [],
-      })),
+    reset: () => set(initialState),
   },
 }))
